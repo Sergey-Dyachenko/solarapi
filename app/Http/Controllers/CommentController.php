@@ -16,7 +16,7 @@ class CommentController extends Controller
 
     public function index()      
     {
-        return new CommentCollection(Comment::all());
+        return Comment::all();пше 
     }
 
     public function create(Request $request)

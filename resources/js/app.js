@@ -17,6 +17,7 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('comments-manager', require('./components/CommentsManager.vue'));
+Vue.component('comment-item', require('./components/CommentItem.vue'));
 window.onload = function (){
 const app = new Vue({
     el: '#app'
