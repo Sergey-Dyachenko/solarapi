@@ -11,11 +11,17 @@ class CommentController extends Controller
 {
     public function show($id)      
     {
-       return new CommentResource(Comment::find($id));
+        $comment = Comment::find($id);
+        // var_dump($comment);
+        // die();
+      
+ //       $siblings->save();
+        return new CommentResource(Comment::find($id));
     }
 
     public function index() 
     {   
+       
         return Comment::all()->groupBy('number');
     }
 
@@ -74,7 +80,36 @@ class CommentController extends Controller
 
     public function delete(Request $request, $id){
          $comment = Comment::findOrFail($id);
-         $comment->delete();
+         $child_comments = Comment::where('path', 'like', $comment->path . '.%')->get()->all();
+         if (!(empty($child_comments))){
+            foreach ($child_comments as $child_comment){
+                 $child_comment->delete();    
+             }
+            
+         }
+        //  else{
+        //      dd('empty childs tree');
+        //  }
+
+        $path = $comment->path; 
+        $comment->delete();
+        $array_path = explode('.', $path);
+        array_pop($array_path);
+        if (!(empty($array_path)))
+        {
+            $string = implode('' , $array_path);
+            $string_path = $string . '._' ;
+            $siblings = Comment::where('path', 'like',  $string_path)->orderBy('path', 'desc')->get();
+            $i = 1;
+            foreach ($siblings as $sibling) :
+                $array_path = explode( '.' ,$sibling->path);
+                array_pop($array_path);
+                $path = implode('.', $array_path);
+                $sibling->path = $path .'.'. $i;
+                $i++;
+                $sibling->save();
+            endforeach;
+        }    
          return 204;
     }
 }
