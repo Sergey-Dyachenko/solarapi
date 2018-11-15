@@ -23,7 +23,7 @@ class CommentController extends Controller
 
     public function create(Request $request)
     {   
-        $last = Comment::orderBy('id', 'desc')->take(1)->get()->first(); 
+        $last = Comment::orderBy('number', 'desc')->take(1)->get()->first(); 
         if (empty($last->number)){
             $number = 1;
             $path = 1; 
@@ -38,7 +38,7 @@ class CommentController extends Controller
         $comment->number = $number;
         $comment->path =  $path;  
         $comment->save();       
-        return Comment::all();       
+        return $comment;       
     }
 
     public function reply(Request $request, $id)
