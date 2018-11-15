@@ -12,10 +12,6 @@ class CommentController extends Controller
     public function show($id)      
     {
         $comment = Comment::find($id);
-        // var_dump($comment);
-        // die();
-      
- //       $siblings->save();
         return new CommentResource(Comment::find($id));
     }
 
@@ -87,10 +83,6 @@ class CommentController extends Controller
              }
             
          }
-        //  else{
-        //      dd('empty childs tree');
-        //  }
-
         $path = $comment->path; 
         $comment->delete();
         $array_path = explode('.', $path);
