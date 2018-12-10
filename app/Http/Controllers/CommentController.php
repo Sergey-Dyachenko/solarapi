@@ -1,27 +1,41 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Exceptions\Handler;
 use Illuminate\Http\Request;
 use App\Comment;
 use App\Http\Resources\Comment as CommentResource;
 use App\Http\Resources\CommentCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CommentController extends Controller
 {
+    public function render ($request, Exception $exception)
+    {
+        if($request->wantsJson() && $exception instanceof ModelNotFoundException)
+        {
+            return response()->json(['status' => 'object request not found'], 404);
+        }
+    }
+
     public function show($id)      
     {
-        $comment = Comment::find($id);
-        return new CommentResource(Comment::find($id));
+       $comment = Comment::find($id);
+       if($comment){
+            return response()->json($comment, 200);
+        }
+        else{
+            return response()->json($comment, 204);
+        }
+
     }
 
     public function index() 
     {   
-       
         return Comment::all()->groupBy('number');
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {   
         $last = Comment::orderBy('number', 'desc')->take(1)->get()->first(); 
         if (empty($last->number)){
@@ -38,7 +52,7 @@ class CommentController extends Controller
         $comment->number = $number;
         $comment->path =  $path;  
         $comment->save();       
-        return $comment;       
+        return response()->json($comment, 201);       
     }
 
     public function reply(Request $request, $id)
