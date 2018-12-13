@@ -77,7 +77,7 @@ class CommentController extends Controller
         $comment->number = $number;
         $comment->path =  $path;  
         $comment->save();       
-        return Comment::all();       
+        return response()->json($comment, 201);         
          
     }
 
@@ -88,7 +88,7 @@ class CommentController extends Controller
         return $comment;
     }
 
-    public function delete(Request $request, $id){
+    public function destroy(Request $request, $id){
          $comment = Comment::findOrFail($id);
          $child_comments = Comment::where('path', 'like', $comment->path . '.%')->get()->all();
          if (!(empty($child_comments))){
@@ -116,6 +116,6 @@ class CommentController extends Controller
                 $sibling->save();
             endforeach;
         }    
-         return 204;
+         return response()->json(null, 204);
     }
 }

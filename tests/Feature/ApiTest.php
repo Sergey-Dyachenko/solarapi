@@ -17,7 +17,8 @@ class ApiTest extends TestCase
     {  
         $response = $this->get('/api/comments');
         $response->assertStatus(200);
-      
+        // var_dump($response);
+        // die();
     }
 
     public function testOneCommentShow()
@@ -40,5 +41,28 @@ class ApiTest extends TestCase
             'name' => 'Test user',
             'text' => 'Test message'
         ]);
+    }
+
+    public function testCommentDelete()
+    {
+        $last = Comment::orderBy('number', 'desc')->take(1)->get()->first(); 
+
+        if (empty($last->number)){
+            $number = 1;
+            $path = 1; 
+        }
+        else{
+            $number = $last->number + 1;
+            $path = $number; 
+        }  
+        $comment = new Comment;
+        $comment->name = 'Test name';
+        $comment->text = 'Test text';
+        $comment->number = $number;
+        $comment->path =  $path;  
+        $comment->save();       
+        $this->json('DELETE', '/api/comments/'. $comment->id)
+        ->assertStatus(204);
+        
     }
 }
